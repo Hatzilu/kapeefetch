@@ -13,7 +13,11 @@ fn main() {
 	match os_release_info.name {
 		Some(name) => println!("OS name: {}",name),
 		None => println!("OOPSIE!@!!@"),
-}
+	}
+	match os_release_info.logo {
+		Some(logo) => println!("Logo: {}", logo),
+		None => println!("No logo."),
+	}
 //	let os_name = sys_info::LinuxOSReleaseInfo::name();
 //	println!("osname is {os_name:?}");
 }
