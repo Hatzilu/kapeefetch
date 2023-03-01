@@ -8,7 +8,7 @@ fn main() {
 	let os_info = sys_info::os_release().expect("Failed");
     println!("Name: {}", os_info);
 
-	let os_release_info = LinuxOSReleaseInfo::new();
+	let os_release_info = sys_info::linux_os_release().expect("Failed 2");
 
 	match os_release_info.name {
 		Some(name) => println!("OS name: {}",name),
