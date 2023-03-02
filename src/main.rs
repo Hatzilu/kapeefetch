@@ -40,11 +40,11 @@ pub fn get_os_name() -> Result<String, std::io::Error> {
 	let mut input = Command::new("uname");
 	
 	input.arg("-m");
-	output = input.output().expect("Failed to read architecture info");
-	architecture = String::from_utf8(output.stdout).unwrap();
+	output = input.output().expect("Failed to read architecture info").stdout;
+	architecture = String::from_utf8(output).unwrap();
 	name_without_quote_marks.push_str(&architecture);
 
-	Ok(name_without_quote_marks)
+	Ok(name_without_quote_marks.trim().to_string())
 }
 
 
