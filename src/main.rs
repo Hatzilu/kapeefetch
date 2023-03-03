@@ -28,10 +28,17 @@ let line_array = buffer
 }
 
 pub fn get_host() -> Result<String, std::io::Error> {
-	let mut buf = String::new();
-	File::open("/sys/devices/virtual/dmi/id/product_name")?.read_to_string(&mut buf)?;
-	Ok(buf.trim().to_string())
+    let mut product_name = String::new();
+    let mut product_version = String::new();
+
+    File::open("/sys/devices/virtual/dmi/id/product_name")?.read_to_string(&mut product_name)?;
+    File::open("/sys/devices/virtual/dmi/id/product_version")?.read_to_string(&mut product_version)?;
+
+    let host_name = format!("{} {}", product_name.trim(), product_version.trim());
+
+    Ok(host_name)
 }
+
 pub fn get_shell() -> Result<String, std::env::VarError> {
 	let final_shell;
 	match var("SHELL") {
