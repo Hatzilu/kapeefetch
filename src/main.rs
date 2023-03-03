@@ -9,11 +9,11 @@ fn main() {
 	println!("");
     for (i, logo_line) in logo_lines.iter().enumerate() {
         let property = match i {
-            0 => format!("\x1b[{0}m{2}\x1b[{0}m: \x1b[37m{1}\x1b[37m",&color, get_os_name().expect("Failed to read OS name"), "OS"),
-            1 => format!("\x1b[{0}m{2}\x1b[{0}m: \x1b[37m{1}\x1b[37m",&color, get_host().expect("Failed to read OS name"), "Host"),
-            2 => format!("\x1b[{0}m{2}\x1b[{0}m: \x1b[37m{1}\x1b[37m",&color, get_cpu_model().expect("Failed to read OS name"), "CPU"),
-            3 => format!("\x1b[{0}m{2}\x1b[{0}m: \x1b[37m{1}\x1b[37m",&color, get_shell().expect("Failed to read OS name"), "Shell"),
-			4 => format!("\x1b[{0}m{2}\x1b[{0}m: \x1b[37m{1}\x1b[37m",&color, get_uptime().expect("Failed to read OS name"), "Uptime"),
+            0 => format!("\x1b[{0}m{2}\x1b[{0}m: \x1b[0m{1}\x1b[0m",&color, get_os_name().expect("Failed to read OS name"), "OS"),
+            1 => format!("\x1b[{0}m{2}\x1b[{0}m: \x1b[0m{1}\x1b[0m",&color, get_host().expect("Failed to read OS name"), "Host"),
+            2 => format!("\x1b[{0}m{2}\x1b[{0}m: \x1b[0m{1}\x1b[0m",&color, get_cpu_model().expect("Failed to read OS name"), "CPU"),
+            3 => format!("\x1b[{0}m{2}\x1b[{0}m: \x1b[0m{1}\x1b[0m",&color, get_shell().expect("Failed to read OS name"), "Shell"),
+			4 => format!("\x1b[{0}m{2}\x1b[{0}m: \x1b[0m{1}\x1b[0m",&color, get_uptime().expect("Failed to read OS name"), "Uptime"),
 			
             _ => "".to_string(),
         };
