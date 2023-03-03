@@ -6,12 +6,24 @@ fn main() {
 	print_with_distro_color(&color, "Host", get_host().expect("Failed to read host machine name"));
 	print_with_distro_color(&color, "CPU", get_cpu_model().expect("Failed to read CPU model"));
 	print_with_distro_color(&color, "Shell", get_shell().expect("Failed to read shell"));
+	print_with_distro_color(&color, "Uptime", get_uptime().expect("Failed to read uptime"));
 }
 
 pub fn print_with_distro_color(label_color: &str, label: &str, value: String) {
 	let default_value_color = "\x1b[37m";
 	println!("\x1b[{0}m{1}\x1b[{0}m: {2}{3}{2}", label_color, label, default_value_color, value);
 
+}
+
+pub fn get_uptime() -> Result<String, std::io::Error> {
+	let mut input = Command::new("uptime");
+	let output;
+	let uptime;
+	input.arg("-p");
+	output = input.output().expect("Failed to read system uptime").stdout;
+	uptime = String::from_utf8(output).unwrap();
+
+	Ok(uptime.replace("up","").trim().to_string())
 }
 
 pub fn get_distro_ansi_color() -> Result<String, std::io::Error> {
