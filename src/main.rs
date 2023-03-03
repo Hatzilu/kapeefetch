@@ -1,4 +1,4 @@
-use std::{fs::File, io::Read, io::{BufRead, BufReader}, env::var, process::Command};
+use std::{fs::File, io::{Read}, io::{BufRead, BufReader}, env::var, process::{Command, Stdio}};
 use kapeefetch::logos;
 
 fn main() {
@@ -14,6 +14,7 @@ fn main() {
             2 => format!("\x1b[{0}m{2}\x1b[{0}m: \x1b[0m{1}\x1b[0m",&color, get_cpu_model().expect("Failed to read OS name"), "CPU"),
             3 => format!("\x1b[{0}m{2}\x1b[{0}m: \x1b[0m{1}\x1b[0m",&color, get_shell().expect("Failed to read OS name"), "Shell"),
 			4 => format!("\x1b[{0}m{2}\x1b[{0}m: \x1b[0m{1}\x1b[0m",&color, get_uptime().expect("Failed to read OS name"), "Uptime"),
+			5 => format!("\x1b[{0}m{2}\x1b[{0}m: \x1b[0m{1}\x1b[0m",&color, get_pkgs(), "Packages"),
 			
             _ => "".to_string(),
         };
@@ -22,8 +23,22 @@ fn main() {
     }
 }
 
-fn get_logo() -> &'static str {
-    let file = File::open("/etc/os-release").unwrap();
+
+fn get_pkgs() -> usize {
+	let id = get_distro_id();
+	match id.as_ref() {
+		"arch" | "manjaro" => {
+			let input =  Command::new("pacman").arg("-Qq").stdout(Stdio::piped()).spawn().unwrap();
+			let mut buf = String::new();
+			input.stdout.unwrap().read_to_string(&mut buf).unwrap_or_else(|err| {println!("Error reading stdout: {}", err); 0});
+			buf.lines().count() 
+		}
+		_ => 0
+	}
+}
+
+fn get_distro_id() -> String {
+	let file = File::open("/etc/os-release").unwrap();
     let reader = BufReader::new(file);
     let mut id = None;
 
@@ -34,11 +49,19 @@ fn get_logo() -> &'static str {
             break;
         }
     }
-
-    match id.as_ref().map(|s| s.trim()) {
-        Some("arch") => logos::ARCH,
-        _ => logos::ARCH,
+	match id.as_ref().map(|s| s.trim()) {
+        Some(name) => name.to_string(),
+        _ => "unknown".to_string(),
     }
+}
+
+fn get_logo() -> &'static str {
+	let id = get_distro_id();
+	match id.as_ref() {
+		"arch" => logos::ARCH,
+		"unknown" => logos::ARCH,
+		_ => logos::ARCH,
+	}
 }
 
 pub fn get_uptime() -> Result<String, std::io::Error> {
