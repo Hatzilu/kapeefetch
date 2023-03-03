@@ -6,32 +6,19 @@ fn main() {
     let logo = get_logo();
     let logo_lines = logo.trim().lines().collect::<Vec<&str>>();   
 	let max_logo_line_length = logo_lines.iter().map(|s| s.len()).max().unwrap_or(0);
-
     for (i, logo_line) in logo_lines.iter().enumerate() {
         let property = match i {
-            0 => format!("OS: {}", get_os_name().expect("Failed to read OS name")),
-            1 => format!("Host: {}", get_host().expect("Failed to read host machine name")),
-            2 => format!("CPU: {}", get_cpu_model().expect("Failed to read CPU model")),
-            3 => format!("Shell: {}", get_shell().expect("Failed to read shell")),
-			4 => format!("Shell: {}", get_uptime().expect("Failed to read uptime")),
+            0 => format!("\x1b[{0}m{2}\x1b[{0}m: \x1b[37m{1}\x1b[37m",&color, get_os_name().expect("Failed to read OS name"), "OS"),
+            1 => format!("\x1b[{0}m{2}\x1b[{0}m: \x1b[37m{1}\x1b[37m",&color, get_host().expect("Failed to read OS name"), "Host"),
+            2 => format!("\x1b[{0}m{2}\x1b[{0}m: \x1b[37m{1}\x1b[37m",&color, get_cpu_model().expect("Failed to read OS name"), "CPU"),
+            3 => format!("\x1b[{0}m{2}\x1b[{0}m: \x1b[37m{1}\x1b[37m",&color, get_shell().expect("Failed to read OS name"), "Shell"),
+			4 => format!("\x1b[{0}m{2}\x1b[{0}m: \x1b[37m{1}\x1b[37m",&color, get_uptime().expect("Failed to read OS name"), "Uptime"),
 			
             _ => "".to_string(),
         };
 
         println!("{:<width$}    {}", logo_line, property, width = max_logo_line_length);
     }
-	// print_with_distro_color(&color,"OS", get_os_name().expect("Failed to read OS name"));
-	// print_with_distro_color(&color, "Host", get_host().expect("Failed to read host machine name"));
-	// print_with_distro_color(&color, "CPU", get_cpu_model().expect("Failed to read CPU model"));
-	// print_with_distro_color(&color, "Shell", get_shell().expect("Failed to read shell"));
-	// print_with_distro_color(&color, "Uptime", get_uptime().expect("Failed to read uptime"));
-}
-
-
-pub fn print_with_distro_color(label_color: &str, label: &str, value: String) {
-	let default_value_color = "\x1b[37m";
-	println!("\x1b[{0}m{1}\x1b[{0}m: {2}{3}{2}", label_color, label, default_value_color, value);
-
 }
 
 fn get_logo() -> &'static str {
