@@ -1,18 +1,56 @@
-use std::{fs::File, io::Read, env::var, process::Command};
+use std::{fs::File, io::Read, io::{BufRead, BufReader}, env::var, process::Command};
+use kapeefetch::logos;
 
 fn main() {
 	let color = get_distro_ansi_color().expect("Failed to get ansi color");
-	print_with_distro_color(&color,"OS", get_os_name().expect("Failed to read OS name"));
-	print_with_distro_color(&color, "Host", get_host().expect("Failed to read host machine name"));
-	print_with_distro_color(&color, "CPU", get_cpu_model().expect("Failed to read CPU model"));
-	print_with_distro_color(&color, "Shell", get_shell().expect("Failed to read shell"));
-	print_with_distro_color(&color, "Uptime", get_uptime().expect("Failed to read uptime"));
+    let logo = get_logo();
+    let logo_lines = logo.trim().lines().collect::<Vec<&str>>();   
+	let max_logo_line_length = logo_lines.iter().map(|s| s.len()).max().unwrap_or(0);
+
+    for (i, logo_line) in logo_lines.iter().enumerate() {
+        let property = match i {
+            0 => format!("OS: {}", get_os_name().expect("Failed to read OS name")),
+            1 => format!("Host: {}", get_host().expect("Failed to read host machine name")),
+            2 => format!("CPU: {}", get_cpu_model().expect("Failed to read CPU model")),
+            3 => format!("Shell: {}", get_shell().expect("Failed to read shell")),
+			4 => format!("Shell: {}", get_uptime().expect("Failed to read uptime")),
+			
+            _ => "".to_string(),
+        };
+
+        println!("{:<width$}    {}", logo_line, property, width = max_logo_line_length);
+    }
+	// print_with_distro_color(&color,"OS", get_os_name().expect("Failed to read OS name"));
+	// print_with_distro_color(&color, "Host", get_host().expect("Failed to read host machine name"));
+	// print_with_distro_color(&color, "CPU", get_cpu_model().expect("Failed to read CPU model"));
+	// print_with_distro_color(&color, "Shell", get_shell().expect("Failed to read shell"));
+	// print_with_distro_color(&color, "Uptime", get_uptime().expect("Failed to read uptime"));
 }
+
 
 pub fn print_with_distro_color(label_color: &str, label: &str, value: String) {
 	let default_value_color = "\x1b[37m";
 	println!("\x1b[{0}m{1}\x1b[{0}m: {2}{3}{2}", label_color, label, default_value_color, value);
 
+}
+
+fn get_logo() -> &'static str {
+    let file = File::open("/etc/os-release").unwrap();
+    let reader = BufReader::new(file);
+    let mut id = None;
+
+    for line in reader.lines() {
+        let line = line.unwrap();
+        if line.starts_with("ID=") {
+            id = Some(line[3..].to_string());
+            break;
+        }
+    }
+
+    match id.as_ref().map(|s| s.trim()) {
+        Some("arch") => logos::ARCH,
+        _ => logos::ARCH,
+    }
 }
 
 pub fn get_uptime() -> Result<String, std::io::Error> {
