@@ -2,6 +2,8 @@
 name = "kapeefetch"
 version = "0.1.0"
 edition = "2021"
+description = "yet another unix fetch package, because why the heck not."
+repository = "https://github.com/Kapeet/kapeefetch"
 
 [profile.release]
 opt-level = 'z'
