@@ -1,10 +1,10 @@
-use std::process::Command;
-use std::{fs::File, io::Read};
+use std::{fs::File, io::Read, env::var, process::Command};
 
 fn main() {
-	println!("OS: {}", get_os_name().expect("Failed"));
-	println!("Host: {}", get_host().expect("Failed"));
-	println!("CPU: {}", get_cpu_model().expect("Failed"));
+	println!("OS: {}", get_os_name().expect("Failed to read OS name"));
+	println!("Host: {}", get_host().expect("Failed to read host machine name"));
+	println!("CPU: {}", get_cpu_model().expect("Failed to read CPU model"));
+	println!("Shell: {}", get_shell().expect("Failed to read shell"));
 
 }
 
@@ -13,6 +13,24 @@ pub fn get_host() -> Result<String, std::io::Error> {
 	let mut buf = String::new();
 	File::open("/sys/devices/virtual/dmi/id/product_name")?.read_to_string(&mut buf)?;
 	Ok(buf.trim().to_string())
+}
+pub fn get_shell() -> Result<String, std::env::VarError> {
+	let final_shell;
+	match var("SHELL") {
+		Ok(shell) => {
+			if shell.starts_with("/usr/bin/") {
+				final_shell = shell.replace("/usr/bin/","").to_string()
+			}
+			else {
+				final_shell = shell
+			}
+		},
+		Err(e) => {
+			println!("Couldn't read shell env var, err: {}",e);
+			final_shell = "Unknown".to_string();
+		}
+	}
+	Ok(final_shell.to_string())
 }
 
 pub fn get_os_name() -> Result<String, std::io::Error> {
