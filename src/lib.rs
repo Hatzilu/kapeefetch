@@ -1,14 +1,10 @@
 pub mod logos {
-    pub const ARCH: &str = r#"
-
-           /\\
+    pub const ARCH: &str = r#"           /\\
           /  \\
          /\\   \\
         /      \\
        /   ,,   \\
       /   |  |  -\\
      /_-''    ''-_\\
-
-
     "#;
 }

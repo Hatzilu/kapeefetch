@@ -4,8 +4,9 @@ use kapeefetch::logos;
 fn main() {
 	let color = get_distro_ansi_color().expect("Failed to get ansi color");
     let logo = get_logo();
-    let logo_lines = logo.trim().lines().collect::<Vec<&str>>();   
+    let logo_lines = logo.lines().collect::<Vec<&str>>();   
 	let max_logo_line_length = logo_lines.iter().map(|s| s.len()).max().unwrap_or(0);
+	println!("");
     for (i, logo_line) in logo_lines.iter().enumerate() {
         let property = match i {
             0 => format!("\x1b[{0}m{2}\x1b[{0}m: \x1b[37m{1}\x1b[37m",&color, get_os_name().expect("Failed to read OS name"), "OS"),
