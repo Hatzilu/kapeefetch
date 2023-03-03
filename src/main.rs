@@ -1,13 +1,31 @@
 use std::{fs::File, io::Read, env::var, process::Command};
 
 fn main() {
-	println!("OS: {}", get_os_name().expect("Failed to read OS name"));
-	println!("Host: {}", get_host().expect("Failed to read host machine name"));
-	println!("CPU: {}", get_cpu_model().expect("Failed to read CPU model"));
-	println!("Shell: {}", get_shell().expect("Failed to read shell"));
+	let color = get_distro_ansi_color().expect("Failed to get ansi color");
+	print_with_distro_color(&color,"OS", get_os_name().expect("Failed to read OS name"));
+	print_with_distro_color(&color, "Host", get_host().expect("Failed to read host machine name"));
+	print_with_distro_color(&color, "CPU", get_cpu_model().expect("Failed to read CPU model"));
+	print_with_distro_color(&color, "Shell", get_shell().expect("Failed to read shell"));
+}
+
+pub fn print_with_distro_color(label_color: &str, label: &str, value: String) {
+	let default_value_color = "\x1b[37m";
+	println!("\x1b[{0}m{1}\x1b[{0}m: {2}{3}{2}", label_color, label, default_value_color, value);
 
 }
 
+pub fn get_distro_ansi_color() -> Result<String, std::io::Error> {
+	let buffer =
+	std::fs::read_to_string("/etc/os-release")
+	.unwrap();
+
+let line_array = buffer
+.lines()
+.filter_map(|x| x.strip_prefix("ANSI_COLOR="))
+.collect::<Vec<&str>>();
+
+	Ok(line_array.get(0).unwrap().to_string().replace("\"", ""))
+}
 
 pub fn get_host() -> Result<String, std::io::Error> {
 	let mut buf = String::new();
